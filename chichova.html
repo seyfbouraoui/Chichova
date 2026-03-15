@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Princesse Chichova</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #87CEEB;
+    --grass: #6DBE47;
+    --pink: #FF6B9D;
+    --yellow: #FFD93D;
+    --purple: #9B59B6;
+    --white-coat: #F0F8FF;
+    --snail-brown: #A0522D;
+    --snail-shell: #E8A838;
+    --text-dark: #2C1810;
+    --bubble: #FFFDE7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #FFF9F0;
+    overflow-x: hidden;
+  }
+
+  /* ---- COVER ---- */
+  #cover {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #B8E4F9 40%, #D4F5C8 70%, #6DBE47 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+
+  .sun {
+    width: 90px; height: 90px;
+    background: #FFD93D;
+    border-radius: 50%;
+    position: absolute; top: 60px; right: 100px;
+    box-shadow: 0 0 0 15px #FFE98044;
+    animation: sunPulse 3s ease-in-out infinite;
+  }
+  @keyframes sunPulse { 0%,100%{box-shadow:0 0 0 15px #FFE98044} 50%{box-shadow:0 0 0 30px #FFE98022} }
+
+  .cloud {
+    background: white; border-radius: 50px;
+    position: absolute; opacity: 0.9;
+    animation: floatCloud 10s linear infinite;
+  }
+  .cloud::before,.cloud::after {
+    content:''; background:white; border-radius:50%; position:absolute;
+  }
+  .c1{width:120px;height:40px;top:80px;left:-130px;animation-duration:18s;}
+  .c1::before{width:60px;height:60px;top:-30px;left:15px;}
+  .c1::after{width:45px;height:45px;top:-20px;left:50px;}
+  .c2{width:90px;height:30px;top:130px;left:-100px;animation-duration:24s;animation-delay:-8s;}
+  .c2::before{width:50px;height:50px;top:-25px;left:10px;}
+  .c2::after{width:35px;height:35px;top:-15px;left:40px;}
+  @keyframes floatCloud{from{left:-200px}to{left:110%}}
+
+  .title-card {
+    background: linear-gradient(135deg, #FF6B9D, #FF9F4B);
+    border-radius: 30px;
+    padding: 30px 50px;
+    text-align: center;
+    box-shadow: 0 10px 40px #FF6B9D55, 0 0 0 6px white;
+    animation: titleBounce 2s ease-in-out infinite;
+    z-index: 2;
+    position: relative;
+  }
+  @keyframes titleBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+  .title-card h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    color: white;
+    text-shadow: 3px 3px 0 #C0392B;
+    line-height: 1.2;
+  }
+  .title-card p {
+    font-size: 1.2rem; color: #FFF3; margin-top: 8px; font-weight: 700;
+  }
+
+  /* Characters on cover */
+  .cover-scene {
+    display: flex; gap: 60px; align-items: flex-end;
+    margin-top: 40px; position: relative; z-index: 2;
+  }
+
+  /* Princess SVG character */
+  .princess-cover { animation: princessWave 2s ease-in-out infinite; }
+  @keyframes princessWave{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  .snail-cover { animation: snailBob 1.5s ease-in-out infinite; }
+  @keyframes snailBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  .start-btn {
+    margin-top: 40px;
+    background: #FFD93D;
+    border: none; border-radius: 50px;
+    padding: 15px 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem; color: #C0392B;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #E67E22;
+    transition: all 0.1s;
+    position: relative; z-index: 2;
+    animation: btnPop 1s ease-in-out infinite;
+  }
+  .start-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #E67E22;}
+  @keyframes btnPop{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+  /* ---- BOOK PAGES ---- */
+  #book { display: none; }
+
+  .page {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .page.active { display: flex; }
+
+  /* Page backgrounds */
+  .bg-castle {
+    background: linear-gradient(180deg, #C9E8F5 0%, #E8D5F5 50%, #C8E6C9 100%);
+  }
+  .bg-cnas {
+    background: linear-gradient(180deg, #E3F2FD 0%, #E8F5E9 100%);
+  }
+  .bg-garden {
+    background: linear-gradient(180deg, #FFF9C4 0%, #E8F5E9 60%, #A5D6A7 100%);
+  }
+  .bg-meeting {
+    background: linear-gradient(180deg, #FCE4EC 0%, #F3E5F5 100%);
+  }
+  .bg-love {
+    background: linear-gradient(180deg, #FFF3E0 0%, #FCE4EC 100%);
+  }
+  .bg-wedding {
+    background: linear-gradient(180deg, #E8F5E9 0%, #FFF9C4 50%, #FCE4EC 100%);
+  }
+
+  /* Scene area */
+  .scene {
+    flex: 1; display: flex; align-items: flex-end; justify-content: center;
+    padding: 20px; position: relative; min-height: 340px;
+  }
+
+  /* Story text box */
+  .story-box {
+    background: var(--bubble);
+    border: 4px solid #FFD93D;
+    border-radius: 25px;
+    padding: 22px 30px;
+    margin: 0 20px 20px;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--text-dark);
+    font-weight: 600;
+    position: relative;
+    box-shadow: 0 6px 20px #FFD93D44;
+  }
+  .story-box::before {
+    content: attr(data-chapter);
+    background: #FF6B9D;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    padding: 4px 14px; border-radius: 20px;
+    position: absolute; top: -16px; left: 20px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 25px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
+    border-top: 3px solid #FFD93D;
+  }
+  .nav-btn {
+    background: #FF6B9D; border: none; border-radius: 50px;
+    padding: 10px 28px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem; color: white; cursor: pointer;
+    box-shadow: 0 4px 0 #C0392B;
+    transition: all 0.1s;
+  }
+  .nav-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #C0392B;}
+  .nav-btn:disabled{background:#ccc;box-shadow:0 4px 0 #aaa;cursor:not-allowed;}
+  .page-indicator {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem; color: #9B59B6;
+    background: white; padding: 6px 16px; border-radius: 20px;
+    border: 2px solid #9B59B6;
+  }
+
+  /* ---- SVG Characters & Decorations ---- */
+  .char { position: relative; display: inline-block; }
+
+  /* Flowers */
+  .flower { position: absolute; font-size: 1.5rem; animation: flowerSway 2s ease-in-out infinite; }
+  @keyframes flowerSway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+  /* Hearts */
+  .heart { position: absolute; font-size: 1.8rem; animation: heartFloat 1.5s ease-in-out infinite; }
+  @keyframes heartFloat{0%,100%{transform:translateY(0) scale(1);opacity:1}50%{transform:translateY(-20px) scale(1.2);opacity:0.7}}
+
+  /* Stars */
+  .star-deco { position: absolute; animation: starTwinkle 1s ease-in-out infinite; }
+  @keyframes starTwinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+  /* Speech bubble */
+  .speech {
+    background: white; border: 3px solid #FF6B9D;
+    border-radius: 20px; padding: 10px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.95rem; color: #C0392B;
+    position: absolute;
+    box-shadow: 3px 3px 0 #FF6B9D44;
+    animation: speechPop 0.5s ease-out;
+    white-space: nowrap;
+  }
+  .speech::after {
+    content:''; position:absolute; bottom:-14px; left:20px;
+    border:7px solid transparent; border-top-color:white;
+  }
+  .speech::before {
+    content:''; position:absolute; bottom:-18px; left:18px;
+    border:9px solid transparent; border-top-color:#FF6B9D;
+  }
+  @keyframes speechPop{from{transform:scale(0)}to{transform:scale(1)}}
+
+  /* Ground grass */
+  .ground {
+    width: 100%; height: 60px;
+    background: #6DBE47;
+    border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+    position: absolute; bottom: 0; left: 0;
+  }
+  .ground::before {
+    content:'🌿🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿🌱🌿🌱';
+    position:absolute; top:-10px; left:0; font-size:1.2rem; letter-spacing:2px;
+  }
+
+  /* Castle */
+  .castle-bg {
+    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    opacity: 0.4; font-size: 8rem;
+  }
+
+  /* CNAS Building */
+  .building {
+    position: absolute; bottom: 50px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .building-body {
+    width: 200px; height: 130px;
+    background: #E3F2FD;
+    border: 4px solid #1565C0;
+    border-radius: 8px 8px 0 0;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 10px; gap: 8px;
+  }
+  .window {
+    background: #FFE082; border: 3px solid #1565C0; border-radius: 4px;
+    animation: windowBlink 3s ease-in-out infinite;
+  }
+  .window:nth-child(2n){animation-delay:1s;}
+  @keyframes windowBlink{0%,100%{background:#FFE082}50%{background:#FFF9C4}}
+  .building-sign {
+    background: #1565C0; color: white;
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    padding: 5px 20px; border-radius: 0 0 6px 6px;
+  }
+  .building-door {
+    width: 40px; height: 55px;
+    background: #8D6E63; border: 3px solid #5D4037;
+    border-radius: 20px 20px 0 0;
+    position: absolute; bottom: 37px; left: 50%; transform: translateX(-50%);
+  }
+
+  /* Characters */
+  .princess-char {
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(4px 6px 8px rgba(0,0,0,0.2));
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+  .snail-char {
+    animation: snailWalk 2s ease-in-out infinite;
+    filter: drop-shadow(3px 5px 6px rgba(0,0,0,0.2));
+  }
+  @keyframes snailWalk{0%,100%{transform:translateX(0) rotate(-2deg)}50%{transform:translateX(5px) rotate(2deg)}}
+
+  .bounce-char {
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+  @keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px)}60%{transform:translateY(-10px)}}
+
+  /* Confetti */
+  .confetti-container { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden; }
+  .confetti-piece {
+    position:absolute; width:12px; height:12px; border-radius:2px;
+    animation: confettiFall linear infinite;
+  }
+  @keyframes confettiFall{
+    0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+    100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+  }
+
+  /* Page transition */
+  .page { animation: pageIn 0.4s ease-out; }
+  @keyframes pageIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
+
+  /* Responsive */
+  @media(max-width:600px){
+    .story-box{font-size:0.95rem;padding:16px 18px;}
+    .scene{min-height:260px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- =================== COVER =================== -->
+<div id="cover">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+
+  <div class="title-card">
+    <h1>👑 La Princesse<br>Chichova 🐌</h1>
+    <p>Une histoire d'amour magique ✨</p>
+  </div>
+
+  <div class="cover-scene">
+    <!-- Princess SVG -->
+    <div class="princess-cover">
+      <svg width="130" height="200" viewBox="0 0 130 200">
+        <!-- Crown -->
+        <polygon points="30,40 45,20 55,35 65,15 75,35 85,20 100,40" fill="#FFD700" stroke="#E6AC00" stroke-width="2"/>
+        <circle cx="45" cy="22" r="5" fill="#FF6B9D"/>
+        <circle cx="65" cy="17" r="5" fill="#9B59B6"/>
+        <circle cx="85" cy="22" r="5" fill="#3498DB"/>
+        <!-- Head -->
+        <ellipse cx="65" cy="65" rx="30" ry="32" fill="#FDDBB4"/>
+        <!-- Eyes -->
+        <ellipse cx="55" cy="60" rx="5" ry="6" fill="white"/>
+        <ellipse cx="75" cy="60" rx="5" ry="6" fill="white"/>
+        <circle cx="55" cy="61" r="3.5" fill="#3D2314"/>
+        <circle cx="75" cy="61" r="3.5" fill="#3D2314"/>
+        <circle cx="56" cy="59" r="1.5" fill="white"/>
+        <circle cx="76" cy="59" r="1.5" fill="white"/>
+        <!-- Blush -->
+        <ellipse cx="47" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+        <ellipse cx="83" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+        <!-- Smile -->
+        <path d="M55,77 Q65,86 75,77" stroke="#C0392B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Hair -->
+        <ellipse cx="65" cy="42" rx="30" ry="15" fill="#8B4513"/>
+        <rect x="35" y="42" width="14" height="55" rx="7" fill="#8B4513"/>
+        <rect x="81" y="42" width="14" height="55" rx="7" fill="#8B4513"/>
+        <!-- White coat -->
+        <rect x="35" y="95" width="60" height="75" rx="10" fill="white" stroke="#B0BEC5" stroke-width="2"/>
+        <!-- Coat details -->
+        <rect x="60" y="95" width="5" height="75" fill="#E0E0E0"/>
+        <circle cx="62" cy="115" r="4" fill="#FF6B9D"/>
+        <circle cx="62" cy="130" r="4" fill="#FF6B9D"/>
+        <circle cx="62" cy="145" r="4" fill="#FF6B9D"/>
+        <!-- Stethoscope -->
+        <path d="M45,105 Q35,125 45,135 Q55,145 55,140" stroke="#E74C3C" stroke-width="3" fill="none"/>
+        <circle cx="55" cy="142" r="6" fill="#E74C3C"/>
+        <!-- Legs -->
+        <rect x="45" y="165" width="16" height="30" rx="8" fill="#FDDBB4"/>
+        <rect x="69" y="165" width="16" height="30" rx="8" fill="#FDDBB4"/>
+        <!-- Shoes -->
+        <ellipse cx="53" cy="194" rx="12" ry="7" fill="#FF6B9D"/>
+        <ellipse cx="77" cy="194" rx="12" ry="7" fill="#FF6B9D"/>
+        <!-- Clipboard -->
+        <rect x="88" y="115" width="22" height="28" rx="4" fill="#FFF9C4" stroke="#FFC107" stroke-width="2"/>
+        <line x1="92" y1="122" x2="106" y2="122" stroke="#9E9E9E" stroke-width="1.5"/>
+        <line x1="92" y1="127" x2="106" y2="127" stroke="#9E9E9E" stroke-width="1.5"/>
+        <line x1="92" y1="132" x2="101" y2="132" stroke="#9E9E9E" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Snail SVG -->
+    <div class="snail-cover">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <!-- Shell -->
+        <circle cx="60" cy="55" r="32" fill="#E8A838" stroke="#C17B20" stroke-width="3"/>
+        <path d="M60,55 Q75,40 70,28 Q60,18 48,25 Q38,33 42,45 Q48,55 60,55" fill="#D4881E" opacity="0.6"/>
+        <path d="M60,55 Q68,48 65,38 Q60,30 52,34 Q46,40 50,48 Q55,55 60,55" fill="#C17B20" opacity="0.5"/>
+        <!-- Body -->
+        <ellipse cx="35" cy="70" rx="28" ry="15" fill="#A0764B"/>
+        <!-- Head -->
+        <ellipse cx="15" cy="62" rx="16" ry="14" fill="#A0764B"/>
+        <!-- Eyes on stalks -->
+        <line x1="10" y1="52" x2="8" y2="40" stroke="#A0764B" stroke-width="3"/>
+        <line x1="18" y1="50" x2="20" y2="38" stroke="#A0764B" stroke-width="3"/>
+        <circle cx="8" cy="38" r="6" fill="white" stroke="#8B4513" stroke-width="1.5"/>
+        <circle cx="20" cy="36" r="6" fill="white" stroke="#8B4513" stroke-width="1.5"/>
+        <circle cx="8" cy="38" r="3" fill="#3D2314"/>
+        <circle cx="20" cy="36" r="3" fill="#3D2314"/>
+        <circle cx="9" cy="37" r="1" fill="white"/>
+        <circle cx="21" cy="35" r="1" fill="white"/>
+        <!-- Smile -->
+        <path d="M9,68 Q15,73 21,68" stroke="#5D3A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Blush -->
+        <ellipse cx="11" cy="67" rx="5" ry="3" fill="#FFB347" opacity="0.6"/>
+        <!-- Flower on shell -->
+        <circle cx="68" cy="38" r="5" fill="#FF6B9D"/>
+        <circle cx="62" cy="33" r="4" fill="#FF6B9D"/>
+        <circle cx="73" cy="33" r="4" fill="#FF6B9D"/>
+        <circle cx="67" cy="36" r="3" fill="#FFD700"/>
+      </svg>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startStory()">▶ Commencer l'histoire !</button>
+</div>
+
+<!-- =================== BOOK =================== -->
+<div id="book">
+
+  <!-- PAGE 1: Introduction -->
+  <div class="page bg-castle active" id="page-1">
+    <div class="scene">
+      <div class="castle-bg">🏰</div>
+      <div class="ground"></div>
+      <!-- Princess studying -->
+      <div class="char" style="z-index:5; margin-bottom:55px;">
+        <div class="speech" style="top:-60px;left:10px;">📚 Je serai médecin !</div>
+        <div class="princess-char">
+          <svg width="120" height="190" viewBox="0 0 130 200">
+            <polygon points="30,40 45,20 55,35 65,15 75,35 85,20 100,40" fill="#FFD700" stroke="#E6AC00" stroke-width="2"/>
+            <circle cx="45" cy="22" r="5" fill="#FF6B9D"/>
+            <circle cx="65" cy="17" r="5" fill="#9B59B6"/>
+            <circle cx="85" cy="22" r="5" fill="#3498DB"/>
+            <ellipse cx="65" cy="65" rx="30" ry="32" fill="#FDDBB4"/>
+            <ellipse cx="55" cy="60" rx="5" ry="6" fill="white"/>
+            <ellipse cx="75" cy="60" rx="5" ry="6" fill="white"/>
+            <circle cx="55" cy="61" r="3.5" fill="#3D2314"/>
+            <circle cx="75" cy="61" r="3.5" fill="#3D2314"/>
+            <circle cx="56" cy="59" r="1.5" fill="white"/>
+            <circle cx="76" cy="59" r="1.5" fill="white"/>
+            <ellipse cx="47" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+            <ellipse cx="83" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+            <path d="M55,77 Q65,85 75,77" stroke="#C0392B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="65" cy="42" rx="30" ry="15" fill="#8B4513"/>
+            <rect x="35" y="42" width="14" height="55" rx="7" fill="#8B4513"/>
+            <rect x="81" y="42" width="14" height="55" rx="7" fill="#8B4513"/>
+            <!-- Princess dress (studying) -->
+            <path d="M35,95 Q20,150 30,175 L100,175 Q110,150 95,95 Z" fill="#E91E8C"/>
+            <path d="M55,95 L65,175 L75,95" fill="#C2185B" opacity="0.4"/>
+            <!-- Stars on dress -->
+            <text x="45" y="135" font-size="12">⭐</text>
+            <text x="68" y="150" font-size="12">⭐</text>
+            <text x="55" y="120" font-size="10">✨</text>
+            <!-- Arms holding book -->
+            <rect x="15" y="100" width="18" height="12" rx="6" fill="#FDDBB4" transform="rotate(-30 15 100)"/>
+            <rect x="95" y="100" width="18" height="12" rx="6" fill="#FDDBB4" transform="rotate(30 110 100)"/>
+            <!-- Big Book -->
+            <rect x="20" y="118" width="40" height="30" rx="4" fill="#3498DB" stroke="#1A5276" stroke-width="2"/>
+            <rect x="21" y="119" width="19" height="28" rx="2" fill="#2980B9"/>
+            <line x1="40" y1="123" x2="56" y2="123" stroke="white" stroke-width="1.5"/>
+            <line x1="40" y1="128" x2="56" y2="128" stroke="white" stroke-width="1.5"/>
+            <line x1="40" y1="133" x2="56" y2="133" stroke="white" stroke-width="1.5"/>
+            <text x="26" y="138" font-size="11" fill="white">Med</text>
+            <rect x="45" y="165" width="16" height="25" rx="8" fill="#FDDBB4"/>
+            <rect x="69" y="165" width="16" height="25" rx="8" fill="#FDDBB4"/>
+            <ellipse cx="53" cy="192" rx="12" ry="7" fill="#E91E8C"/>
+            <ellipse cx="77" cy="192" rx="12" ry="7" fill="#E91E8C"/>
+          </svg>
+        </div>
+      </div>
+      <!-- King & Queen -->
+      <div class="char" style="z-index:4; margin-bottom:55px; margin-left:20px; opacity:0.8;">
+        <div class="speech" style="top:-40px;left:-10px;font-size:0.8rem;">👑 Mon Dieu...</div>
+        <svg width="80" height="140" viewBox="0 0 80 140">
+          <polygon points="20,25 30,10 40,20 50,10 60,25" fill="#FFD700"/>
+          <ellipse cx="40" cy="45" rx="20" ry="22" fill="#FDDBB4"/>
+          <circle cx="34" cy="42" r="3" fill="#3D2314"/>
+          <circle cx="46" cy="42" r="3" fill="#3D2314"/>
+          <path d="M34,52 Q40,58 46,52" stroke="#C0392B" stroke-width="2" fill="none"/>
+          <ellipse cx="40" cy="27" rx="20" ry="10" fill="#8B4513"/>
+          <rect x="22" y="65" width="36" height="50" rx="6" fill="#9B59B6"/>
+          <rect x="28" y="113" width="10" height="20" rx="5" fill="#FDDBB4"/>
+          <rect x="42" y="113" width="10" height="20" rx="5" fill="#FDDBB4"/>
+        </svg>
+      </div>
+      <!-- Decorative flowers -->
+      <div class="flower" style="bottom:60px;left:40px;">🌸</div>
+      <div class="flower" style="bottom:60px;right:50px;animation-delay:0.5s;">🌺</div>
+      <div class="flower" style="bottom:65px;left:200px;animation-delay:1s;">🌼</div>
+    </div>
+    <div class="story-box" data-chapter="🏰 Il était une fois...">
+      Dans un royaume merveilleux vivait la princesse <strong>Chichova</strong>. Là où ses sœurs brodaient et dansaient, elle lisait de gros livres de médecine ! Son père le roi soupirait… mais Chichova, imperturbable, continuait d'étudier. 📚
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" disabled>◀ Précédent</button>
+      <span class="page-indicator">📖 1 / 6</span>
+      <button class="nav-btn" onclick="goTo(2)">Suivant ▶</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: CNAS -->
+  <div class="page bg-cnas" id="page-2">
+    <div class="scene">
+      <!-- CNAS Building -->
+      <div class="building" style="left:50%;transform:translateX(-50%);">
+        <div class="building-body">
+          <div class="window"></div><div class="window"></div><div class="window"></div>
+          <div class="window"></div><div class="window"></div><div class="window"></div>
+        </div>
+        <div class="building-sign">🏥 CNAS</div>
+        <div class="building-door"></div>
+      </div>
+      <div class="ground"></div>
+      <!-- Princess in coat -->
+      <div class="char" style="z-index:5; margin-bottom:55px; margin-left:30px;">
+        <div class="speech" style="top:-55px;left:-20px;">Je suis prête ! 💪</div>
+        <div class="bounce-char">
+          <svg width="110" height="185" viewBox="0 0 130 200">
+            <ellipse cx="65" cy="65" rx="30" ry="32" fill="#FDDBB4"/>
+            <ellipse cx="55" cy="60" rx="5" ry="6" fill="white"/>
+            <ellipse cx="75" cy="60" rx="5" ry="6" fill="white"/>
+            <circle cx="55" cy="61" r="3.5" fill="#3D2314"/>
+            <circle cx="75" cy="61" r="3.5" fill="#3D2314"/>
+            <circle cx="56" cy="59" r="1.5" fill="white"/>
+            <circle cx="76" cy="59" r="1.5" fill="white"/>
+            <ellipse cx="47" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+            <ellipse cx="83" cy="70" rx="7" ry="5" fill="#FFB3BA" opacity="0.7"/>
+            <path d="M55,77 Q65,86 75,77" stroke="#C0392B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="65" cy="42" rx="30" ry="15" fill="#4A2700"/>
+            <rect x="35" y="42" width="14" height="55" rx="7" fill="#4A2700"/>
+            <rect x="81" y="42" width="14" height="55" rx="7" fill="#4A2700"/>
+            <!-- White coat -->
+            <rect x="32" y="94" width="66" height="75" rx="10" fill="white" stroke="#B0BEC5" stroke-width="2"/>
+            <rect x="60" y="94" width="5" height="75" fill="#E0E0E0"/>
+            <circle cx="50" cy="115" r="4" fill="#E74C3C"/>
+            <circle cx="50" cy="128" r="4" fill="#E74C3C"/>
+            <circle cx="50" cy="141" r="4" fill="#E74C3C"/>
+            <!-- Stethoscope -->
+            <path d="M45,105 Q33,125 43,135 Q53,145 53,140" stroke="#E74C3C" stroke-width="3" fill="none"/>
+            <circle cx="53" cy="142" r="6" fill="#E74C3C"/>
+            <!-- ID badge -->
+            <rect x="68" y="103" width="25" height="18" rx="3" fill="#1565C0"/>
+            <text x="71" y="113" font-size="7" fill="white">CNAS</text>
+            <text x="71" y="119" font-size="6" fill="#90CAF9">Dr.</text>
+            <!-- Legs -->
+            <rect x="45" y="165" width="16" height="28" rx="8" fill="#FDDBB4"/>
+            <rect x="69" y="165" width="16" height="28" rx="8" fill="#FDDBB4"/>
+            <ellipse cx="53" cy="194" rx="12" ry="7" fill="#1565C0"/>
+            <ellipse cx="77" cy="194" rx="12" ry="7" fill="#1565C0"/>
+          </svg>
+        </div>
+      </div>
+      <div class="star-deco" style="font-size:2rem;top:50px;right:60px;animation-delay:0.3s;">⭐</div>
+      <div class="star-deco" style="font-size:1.5rem;top:80px;right:120px;animation-delay:0.8s;">✨</div>
+      <div class="flower" style="bottom:60px;right:80px;">🌷</div>
+    </div>
+    <div class="story-box" data-chapter="👩‍⚕️ Médecin à la CNAS !">
+      À vingt-six ans, elle obtint son diplôme avec <strong>les félicitations du jury</strong> ! Elle rejoignit la <strong>CNAS</strong> comme médecin conseil. Des dossiers, des patients, une imprimante capricieuse et un café froid… mais elle adorait son travail ! 🏥
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(1)">◀ Précédent</button>
+      <span class="page-indicator">📖 2 / 6</span>
+      <button class="nav-btn" onclick="goTo(3)">Suivant ▶</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Meeting Escargot -->
+  <div class="page bg-meeting" id="page-3">
+    <div class="scene">
+      <!-- Office desk -->
+      <div style="position:absolute;bottom:53px;left:50%;transform:translateX(-50%);z-index:3;">
+        <div style="width:260px;height:50px;background:#8D6E63;border-radius:8px 8px 0 0;border:3px solid #5D4037;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px;">
+          <div style="width:50px;height:34px;background:#FFF9C4;border:2px solid #FFC107;border-radius:4px;font-size:0.55rem;color:#888;padding:3px;overflow:hidden;">📄📄📄</div>
+          <div style="width:30px;height:34px;background:#1565C0;border-radius:4px;color:white;font-size:0.8rem;display:flex;align-items:center;justify-content:center;">💻</div>
+          <div style="width:25px;height:34px;display:flex;align-items:center;font-size:1.2rem;">☕</div>
+        </div>
+      </div>
+      <div class="ground"></div>
+      <!-- Chichova behind desk -->
+      <div class="char" style="z-index:4; margin-bottom:100px; margin-right:40px;">
+        <svg width="90" height="130" viewBox="0 0 130 160">
+          <ellipse cx="65" cy="55" rx="28" ry="30" fill="#FDDBB4"/>
+          <ellipse cx="56" cy="50" rx="4" ry="5" fill="white"/>
+          <ellipse cx="74" cy="50" rx="4" ry="5" fill="white"/>
+          <circle cx="56" cy="51" r="3" fill="#3D2314"/>
+          <circle cx="74" cy="51" r="3" fill="#3D2314"/>
+          <circle cx="57" cy="50" r="1" fill="white"/>
+          <circle cx="75" cy="50" r="1" fill="white"/>
+          <ellipse cx="48" cy="60" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <ellipse cx="82" cy="60" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <path d="M56,66 Q65,73 74,66" stroke="#C0392B" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="65" cy="33" rx="28" ry="13" fill="#4A2700"/>
+          <rect x="35" y="42" width="14" height="45" rx="7" fill="#4A2700"/>
+          <rect x="81" y="42" width="14" height="45" rx="7" fill="#4A2700"/>
+          <rect x="35" y="83" width="60" height="55" rx="8" fill="white" stroke="#B0BEC5" stroke-width="2"/>
+          <rect x="58" y="83" width="4" height="55" fill="#E0E0E0"/>
+          <circle cx="47" cy="100" r="3" fill="#E74C3C"/>
+          <circle cx="47" cy="112" r="3" fill="#E74C3C"/>
+        </svg>
+      </div>
+      <!-- Escargot visiting -->
+      <div class="char" style="z-index:5; margin-bottom:55px; margin-left:20px;">
+        <div class="speech" style="top:-60px;right:-10px;font-size:0.85rem;">🌱 Pour la salle d'attente !</div>
+        <div class="snail-char">
+          <svg width="100" height="140" viewBox="0 0 120 160">
+            <!-- Escargot as a human holding a plant -->
+            <ellipse cx="60" cy="50" rx="25" ry="28" fill="#FDDBB4"/>
+            <ellipse cx="52" cy="45" rx="4" ry="5" fill="white"/>
+            <ellipse cx="68" cy="45" rx="4" ry="5" fill="white"/>
+            <circle cx="52" cy="46" r="3" fill="#5D3A1A"/>
+            <circle cx="68" cy="46" r="3" fill="#5D3A1A"/>
+            <circle cx="53" cy="45" r="1" fill="white"/>
+            <circle cx="69" cy="45" r="1" fill="white"/>
+            <ellipse cx="44" cy="56" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+            <ellipse cx="76" cy="56" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+            <path d="M52,62 Q60,69 68,62" stroke="#8B4513" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <!-- Hair -->
+            <ellipse cx="60" cy="27" rx="25" ry="11" fill="#6B3A2A"/>
+            <rect x="34" y="30" width="10" height="35" rx="5" fill="#6B3A2A"/>
+            <rect x="76" y="30" width="10" height="35" rx="5" fill="#6B3A2A"/>
+            <!-- Body - gardener shirt -->
+            <rect x="35" y="76" width="50" height="55" rx="8" fill="#4CAF50"/>
+            <rect x="57" y="76" width="6" height="55" fill="#388E3C" opacity="0.5"/>
+            <!-- Overalls straps -->
+            <rect x="44" y="76" width="10" height="8" rx="3" fill="#795548"/>
+            <rect x="66" y="76" width="10" height="8" rx="3" fill="#795548"/>
+            <!-- Arm holding plant -->
+            <rect x="82" y="82" width="14" height="10" rx="5" fill="#FDDBB4" transform="rotate(20 82 82)"/>
+            <!-- Plant pot -->
+            <rect x="90" y="90" width="24" height="22" rx="4" fill="#E07B39"/>
+            <rect x="93" y="86" width="18" height="8" rx="2" fill="#8B4513"/>
+            <!-- Plant leaves -->
+            <ellipse cx="102" cy="76" rx="8" ry="12" fill="#4CAF50" transform="rotate(-20 102 76)"/>
+            <ellipse cx="108" cy="72" rx="8" ry="12" fill="#66BB6A" transform="rotate(15 108 72)"/>
+            <ellipse cx="96" cy="74" rx="6" ry="10" fill="#388E3C" transform="rotate(-35 96 74)"/>
+            <!-- Legs -->
+            <rect x="42" y="128" width="14" height="25" rx="7" fill="#FDDBB4"/>
+            <rect x="64" y="128" width="14" height="25" rx="7" fill="#FDDBB4"/>
+            <ellipse cx="49" cy="154" rx="11" ry="6" fill="#795548"/>
+            <ellipse cx="71" cy="154" rx="11" ry="6" fill="#795548"/>
+          </svg>
+        </div>
+      </div>
+      <!-- Hearts appearing -->
+      <div class="heart" style="top:60px;left:40%;animation-delay:0s;">❤️</div>
+      <div class="heart" style="top:80px;left:48%;animation-delay:0.5s;font-size:1.2rem;">💕</div>
+      <div class="heart" style="top:50px;left:55%;animation-delay:1s;font-size:1.5rem;">💖</div>
+    </div>
+    <div class="story-box" data-chapter="🌱 La rencontre !">
+      Un mardi ordinaire, il entra. Il s'appelait <strong>Escargot</strong> — Escargot Olivier, jardinier municipal. Il arriva avec une <strong>plante verte</strong> sous le bras : <em>"Pour la salle d'attente, elle en avait besoin"</em>. Chichova, pour la première fois, ne sut quoi répondre ! 😊
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(2)">◀ Précédent</button>
+      <span class="page-indicator">📖 3 / 6</span>
+      <button class="nav-btn" onclick="goTo(4)">Suivant ▶</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Growing love -->
+  <div class="page bg-love" id="page-4">
+    <div class="scene">
+      <div class="ground"></div>
+      <!-- Park bench -->
+      <div style="position:absolute;bottom:55px;left:50%;transform:translateX(-50%);z-index:2;">
+        <div style="width:220px;height:15px;background:#8D6E63;border-radius:6px;border:2px solid #5D4037;"></div>
+        <div style="display:flex;justify-content:space-between;padding:0 20px;">
+          <div style="width:12px;height:35px;background:#6D4C41;border-radius:0 0 4px 4px;"></div>
+          <div style="width:12px;height:35px;background:#6D4C41;border-radius:0 0 4px 4px;"></div>
+          <div style="width:12px;height:35px;background:#6D4C41;border-radius:0 0 4px 4px;"></div>
+          <div style="width:12px;height:35px;background:#6D4C41;border-radius:0 0 4px 4px;"></div>
+        </div>
+      </div>
+      <!-- Stars/moon (evening scene) -->
+      <div style="position:absolute;top:20px;right:30px;font-size:2.5rem;animation:starTwinkle 2s ease-in-out infinite;">🌙</div>
+      <div class="star-deco" style="font-size:1.5rem;top:30px;left:60px;">⭐</div>
+      <div class="star-deco" style="font-size:1rem;top:60px;left:120px;animation-delay:0.5s;">✨</div>
+      <div class="star-deco" style="font-size:1.2rem;top:25px;right:100px;animation-delay:1s;">⭐</div>
+      <!-- Chichova sitting -->
+      <div class="char" style="z-index:5;margin-bottom:88px;margin-right:10px;">
+        <svg width="90" height="120" viewBox="0 0 120 150">
+          <ellipse cx="60" cy="45" rx="25" ry="27" fill="#FDDBB4"/>
+          <ellipse cx="52" cy="40" rx="4" ry="5" fill="white"/>
+          <ellipse cx="68" cy="40" rx="4" ry="5" fill="white"/>
+          <circle cx="52" cy="41" r="3" fill="#3D2314"/>
+          <circle cx="68" cy="41" r="3" fill="#3D2314"/>
+          <circle cx="53" cy="40" r="1" fill="white"/>
+          <circle cx="69" cy="40" r="1" fill="white"/>
+          <ellipse cx="44" cy="52" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <ellipse cx="76" cy="52" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <path d="M51,58 Q60,66 69,58" stroke="#C0392B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="60" cy="24" rx="25" ry="12" fill="#4A2700"/>
+          <rect x="32" y="32" width="12" height="40" rx="6" fill="#4A2700"/>
+          <rect x="76" y="32" width="12" height="40" rx="6" fill="#4A2700"/>
+          <rect x="34" y="70" width="52" height="50" rx="8" fill="#FF6B9D"/>
+          <rect x="34" y="115" width="52" height="18" rx="4" fill="#FF6B9D"/>
+          <!-- arm pointing up (explaining) -->
+          <rect x="82" y="72" width="28" height="10" rx="5" fill="#FDDBB4" transform="rotate(-60 82 72)"/>
+        </svg>
+      </div>
+      <!-- Escargot sitting -->
+      <div class="char" style="z-index:5;margin-bottom:88px;margin-left:10px;">
+        <svg width="90" height="120" viewBox="0 0 120 150">
+          <ellipse cx="60" cy="45" rx="25" ry="27" fill="#FDDBB4"/>
+          <ellipse cx="52" cy="40" rx="4" ry="5" fill="white"/>
+          <ellipse cx="68" cy="40" rx="4" ry="5" fill="white"/>
+          <circle cx="52" cy="41" r="3" fill="#5D3A1A"/>
+          <circle cx="68" cy="41" r="3" fill="#5D3A1A"/>
+          <circle cx="53" cy="40" r="1" fill="white"/>
+          <circle cx="69" cy="40" r="1" fill="white"/>
+          <ellipse cx="44" cy="52" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <ellipse cx="76" cy="52" rx="6" ry="4" fill="#FFB3BA" opacity="0.7"/>
+          <path d="M51,58 Q60,66 69,58" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="60" cy="24" rx="25" ry="12" fill="#6B3A2A"/>
+          <rect x="32" y="32" width="12" height="40" rx="6" fill="#6B3A2A"/>
+          <rect x="76" y="32" width="12" height="40" rx="6" fill="#6B3A2A"/>
+          <rect x="34" y="70" width="52" height="50" rx="8" fill="#4CAF50"/>
+          <rect x="34" y="115" width="52" height="18" rx="4" fill="#4CAF50"/>
+        </svg>
+      </div>
+      <!-- Floating hearts everywhere -->
+      <div class="heart" style="top:40px;left:35%;animation-delay:0s;">💕</div>
+      <div class="heart" style="top:65px;left:45%;animation-delay:0.7s;">❤️</div>
+      <div class="heart" style="top:35px;left:55%;animation-delay:1.2s;font-size:1.2rem;">💗</div>
+      <div class="heart" style="top:80px;left:60%;animation-delay:0.3s;font-size:1rem;">💖</div>
+      <!-- Plants/flowers deco -->
+      <div class="flower" style="bottom:55px;left:50px;">🌸</div>
+      <div class="flower" style="bottom:55px;right:50px;animation-delay:1s;">🌺</div>
+      <div class="flower" style="bottom:58px;left:150px;animation-delay:0.5s;">🌼</div>
+    </div>
+    <div class="story-box" data-chapter="💕 L'amour fleurit...">
+      Il revint semaine après semaine, avec de nouvelles plantes 🌿. Ils se promenèrent au bord de la rivière, parlèrent des étoiles… Un soir sur un banc, il murmura : <em>"Je crois que je suis amoureux d'une princesse médecin."</em> Et elle sourit : <em>"Et moi d'un jardinier qui s'appelle Escargot !"</em> 🌙
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(3)">◀ Précédent</button>
+      <span class="page-indicator">📖 4 / 6</span>
+      <button class="nav-btn" onclick="goTo(5)">Suivant ▶</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5: Proposal -->
+  <div class="page bg-garden" id="page-5">
+    <div class="scene">
+      <div class="ground"></div>
+      <!-- Giant garden arch of flowers -->
+      <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);z-index:2;font-size:3rem;text-align:center;line-height:1;">
+        🌸🌺🌸<br>🌹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌹<br>🌻&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌻
+      </div>
+      <!-- Escargot proposing -->
+      <div class="char" style="z-index:6;margin-bottom:58px;margin-right:5px;">
+        <div class="speech" style="top:-65px;right:-30px;">💍 Veux-tu<br>m'épouser?</div>
+        <div class="bounce-char">
+          <svg width="95" height="140" viewBox="0 0 120 160">
+            <ellipse cx="60" cy="42" rx="24" ry="26" fill="#FDDBB4"/>
+            <ellipse cx="52" cy="37" rx="4" ry="5" fill="white"/>
+            <ellipse cx="68" cy="37" rx="4" ry="5" fill="white"/>
+            <circle cx="52" cy="38" r="3" fill="#5D3A1A"/>
+            <circle cx="68" cy="38" r="3" fill="#5D3A1A"/>
+            <circle cx="53" cy="37" r="1" fill="white"/>
+            <circle cx="69" cy="37" r="1" fill="white"/>
+            <ellipse cx="44" cy="49" rx="5" ry="3.5" fill="#FFB3BA" opacity="0.7"/>
+            <ellipse cx="76" cy="49" rx="5" ry="3.5" fill="#FFB3BA" opacity="0.7"/>
+            <path d="M51,55 Q60,63 69,55" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="60" cy="22" rx="24" ry="10" fill="#6B3A2A"/>
+            <rect x="35" y="30" width="10" height="35" rx="5" fill="#6B3A2A"/>
+            <rect x="75" y="30" width="10" height="35" rx="5" fill="#6B3A2A"/>
+            <rect x="35" y="66" width="50" height="55" rx="8" fill="#4CAF50"/>
+            <!-- One knee down (proposing gesture) -->
+            <rect x="38" y="118" width="16" height="22" rx="7" fill="#FDDBB4"/>
+            <rect x="62" y="130" width="14" height="12" rx="5" fill="#FDDBB4" transform="rotate(15 62 130)"/>
+            <ellipse cx="46" cy="141" rx="11" ry="6" fill="#795548"/>
+            <!-- Ring box in hand -->
+            <rect x="75" y="90" width="24" height="20" rx="4" fill="#C0392B"/>
+            <rect x="75" y="90" width="24" height="10" rx="4" fill="#E74C3C"/>
+            <text x="82" y="87" font-size="14">💍</text>
+          </svg>
+        </div>
+      </div>
+      <!-- Chichova surprised/happy -->
+      <div class="char" style="z-index:6;margin-bottom:58px;margin-left:15px;">
+        <div class="speech" style="top:-50px;left:-20px;">OUI ! 🎉</div>
+        <div class="princess-char">
+          <svg width="95" height="145" viewBox="0 0 120 165">
+            <polygon points="28,35 40,18 50,30 60,12 70,30 80,18 92,35" fill="#FFD700" stroke="#E6AC00" stroke-width="2"/>
+            <circle cx="40" cy="20" r="4" fill="#FF6B9D"/>
+            <circle cx="60" cy="14" r="4" fill="#9B59B6"/>
+            <circle cx="80" cy="20" r="4" fill="#3498DB"/>
+            <ellipse cx="60" cy="58" rx="26" ry="28" fill="#FDDBB4"/>
+            <ellipse cx="52" cy="52" rx="4" ry="5" fill="white"/>
+            <ellipse cx="68" cy="52" rx="4" ry="5" fill="white"/>
+            <circle cx="52" cy="53" r="3" fill="#3D2314"/>
+            <circle cx="68" cy="53" r="3" fill="#3D2314"/>
+            <circle cx="53" cy="52" r="1" fill="white"/>
+            <circle cx="69" cy="52" r="1" fill="white"/>
+            <ellipse cx="44" cy="63" rx="6" ry="4" fill="#FFB3BA" opacity="0.8"/>
+            <ellipse cx="76" cy="63" rx="6" ry="4" fill="#FFB3BA" opacity="0.8"/>
+            <!-- Big happy mouth -->
+            <path d="M49,70 Q60,82 71,70" stroke="#C0392B" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <ellipse cx="60" cy="38" rx="26" ry="11" fill="#4A2700"/>
+            <rect x="32" y="40" width="12" height="42" rx="6" fill="#4A2700"/>
+            <rect x="76" y="40" width="12" height="42" rx="6" fill="#4A2700"/>
+            <!-- White coat -->
+            <rect x="32" y="84" width="56" height="55" rx="8" fill="white" stroke="#B0BEC5" stroke-width="2"/>
+            <rect x="57" y="84" width="5" height="55" fill="#E0E0E0"/>
+            <circle cx="45" cy="100" r="3" fill="#E74C3C"/>
+            <!-- Arms raised in joy -->
+            <rect x="10" y="88" width="22" height="10" rx="5" fill="#FDDBB4" transform="rotate(-45 10 88)"/>
+            <rect x="88" y="88" width="22" height="10" rx="5" fill="#FDDBB4" transform="rotate(45 110 88)"/>
+            <rect x="42" y="135" width="14" height="24" rx="7" fill="#FDDBB4"/>
+            <rect x="64" y="135" width="14" height="24" rx="7" fill="#FDDBB4"/>
+            <ellipse cx="49" cy="160" rx="11" ry="6" fill="#FF6B9D"/>
+            <ellipse cx="71" cy="160" rx="11" ry="6" fill="#FF6B9D"/>
+          </svg>
+        </div>
+      </div>
+      <!-- Hearts explosion -->
+      <div class="heart" style="top:30px;left:30%;font-size:2rem;animation-delay:0s;">💖</div>
+      <div class="heart" style="top:50px;left:42%;animation-delay:0.3s;">❤️</div>
+      <div class="heart" style="top:25px;left:55%;font-size:1.5rem;animation-delay:0.6s;">💕</div>
+      <div class="heart" style="top:60px;left:65%;animation-delay:0.9s;">💗</div>
+      <div class="heart" style="top:20px;left:70%;font-size:2rem;animation-delay:0.15s;">💝</div>
+      <div class="flower" style="bottom:55px;left:20px;font-size:2rem;">🌹</div>
+      <div class="flower" style="bottom:55px;right:20px;font-size:2rem;animation-delay:0.8s;">🌹</div>
+    </div>
+    <div class="story-box" data-chapter="💍 La demande !">
+      Dans le jardin municipal, entouré de <strong>fleurs qu'il avait cultivées lui-même</strong>, Escargot posa un genou à terre. Chichova, la princesse médecin qui avait tout vu, se retrouva les joues roses et les yeux brillants. <em>"Oui, mille fois oui !"</em> 💍🌹
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(4)">◀ Précédent</button>
+      <span class="page-indicator">📖 5 / 6</span>
+      <button class="nav-btn" onclick="goTo(6)">Suivant ▶</button>
+    </div>
+  </div>
+
+  <!-- PAGE 6: Wedding -->
+  <div class="page bg-wedding" id="page-6">
+    <div class="confetti-container" id="confetti"></div>
+    <div class="scene">
+      <div class="ground"></div>
+      <!-- Flower arch -->
+      <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);z-index:1;text-align:center;font-size:2.5rem;line-height:1.1;">
+        🌸🌺🌸🌸🌺<br>🌹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌹<br>🌼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌼
+      </div>
+      <!-- Married couple -->
+      <div class="char" style="z-index:5;margin-bottom:58px;display:flex;gap:10px;align-items:flex-end;">
+        <!-- Chichova in wedding dress but with doctor shoes -->
+        <div class="bounce-char">
+          <svg width="105" height="165" viewBox="0 0 130 190">
+            <polygon points="28,35 40,18 50,30 60,12 70,30 80,18 92,35" fill="#FFD700" stroke="#E6AC00" stroke-width="2"/>
+            <circle cx="40" cy="20" r="5" fill="#FF6B9D"/>
+            <circle cx="60" cy="14" r="5" fill="#9B59B6"/>
+            <circle cx="80" cy="20" r="5" fill="#FF6B9D"/>
+            <ellipse cx="60" cy="62" rx="28" ry="30" fill="#FDDBB4"/>
+            <ellipse cx="52" cy="56" rx="5" ry="6" fill="white"/>
+            <ellipse cx="68" cy="56" rx="5" ry="6" fill="white"/>
+            <circle cx="52" cy="57" r="3.5" fill="#3D2314"/>
+            <circle cx="68" cy="57" r="3.5" fill="#3D2314"/>
+            <circle cx="53" cy="56" r="1.5" fill="white"/>
+            <circle cx="69" cy="56" r="1.5" fill="white"/>
+            <ellipse cx="43" cy="68" rx="7" ry="5" fill="#FFB3BA" opacity="0.8"/>
+            <ellipse cx="77" cy="68" rx="7" ry="5" fill="#FFB3BA" opacity="0.8"/>
+            <path d="M50,76 Q60,86 70,76" stroke="#C0392B" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Veil -->
+            <ellipse cx="60" cy="40" rx="28" ry="13" fill="#4A2700"/>
+            <rect x="32" y="42" width="12" height="45" rx="6" fill="#4A2700"/>
+            <rect x="86" y="42" width="12" height="45" rx="6" fill="#4A2700"/>
+            <path d="M32,42 Q28,80 35,130" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
+            <!-- Wedding dress -->
+            <path d="M35,90 Q15,140 20,185 L100,185 Q105,140 85,90 Z" fill="white" stroke="#E0E0E0" stroke-width="2"/>
+            <!-- Dress details -->
+            <path d="M35,90 Q60,105 85,90" stroke="#FFB3BA" stroke-width="2" fill="none"/>
+            <text x="42" y="130" font-size="14">🌸</text>
+            <text x="62" y="150" font-size="12">🌸</text>
+            <text x="52" y="115" font-size="10">🌸</text>
+            <!-- Doctor shoes -->
+            <ellipse cx="42" cy="184" rx="14" ry="8" fill="#1565C0"/>
+            <ellipse cx="80" cy="184" rx="14" ry="8" fill="#1565C0"/>
+            <!-- Stethoscope even on wedding day -->
+            <path d="M38,98 Q28,118 38,126 Q48,134 48,130" stroke="#E74C3C" stroke-width="2.5" fill="none" opacity="0.7"/>
+            <circle cx="48" cy="132" r="5" fill="#E74C3C" opacity="0.7"/>
+            <!-- Bouquet -->
+            <text x="88" y="118" font-size="22">💐</text>
+          </svg>
+        </div>
+        <!-- Escargot in suit -->
+        <div class="bounce-char" style="animation-delay:0.3s;">
+          <svg width="100" height="155" viewBox="0 0 120 175">
+            <ellipse cx="60" cy="50" rx="25" ry="28" fill="#FDDBB4"/>
+            <ellipse cx="52" cy="44" rx="4" ry="5" fill="white"/>
+            <ellipse cx="68" cy="44" rx="4" ry="5" fill="white"/>
+            <circle cx="52" cy="45" r="3" fill="#5D3A1A"/>
+            <circle cx="68" cy="45" r="3" fill="#5D3A1A"/>
+            <circle cx="53" cy="44" r="1" fill="white"/>
+            <circle cx="69" cy="44" r="1" fill="white"/>
+            <ellipse cx="44" cy="56" rx="5" ry="3.5" fill="#FFB3BA" opacity="0.7"/>
+            <ellipse cx="76" cy="56" rx="5" ry="3.5" fill="#FFB3BA" opacity="0.7"/>
+            <path d="M51,63 Q60,72 69,63" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="60" cy="28" rx="25" ry="11" fill="#6B3A2A"/>
+            <rect x="34" y="33" width="10" height="38" rx="5" fill="#6B3A2A"/>
+            <rect x="76" y="33" width="10" height="38" rx="5" fill="#6B3A2A"/>
+            <!-- Suit -->
+            <rect x="33" y="76" width="54" height="62" rx="8" fill="#37474F"/>
+            <!-- Shirt & bow tie -->
+            <rect x="53" y="76" width="14" height="62" fill="white"/>
+            <text x="55" y="95" font-size="16">🎀</text>
+            <!-- Jacket lapels -->
+            <path d="M33,76 L53,96 L53,76" fill="#455A64"/>
+            <path d="M87,76 L67,96 L67,76" fill="#455A64"/>
+            <!-- Flower on lapel -->
+            <text x="36" y="100" font-size="12">🌸</text>
+            <!-- Arms holding hands space -->
+            <rect x="84" y="82" width="22" height="10" rx="5" fill="#FDDBB4"/>
+            <rect x="38" y="135" width="14" height="28" rx="7" fill="#FDDBB4"/>
+            <rect x="68" y="135" width="14" height="28" rx="7" fill="#FDDBB4"/>
+            <ellipse cx="45" cy="163" rx="11" ry="7" fill="#37474F"/>
+            <ellipse cx="75" cy="163" rx="11" ry="7" fill="#37474F"/>
+          </svg>
+        </div>
+      </div>
+      <!-- Celebrating crowd -->
+      <div style="position:absolute;bottom:55px;left:10px;font-size:1.8rem;z-index:3;animation:bounce 2s ease-in-out infinite;">👑🎊</div>
+      <div style="position:absolute;bottom:55px;right:10px;font-size:1.8rem;z-index:3;animation:bounce 2s ease-in-out infinite;animation-delay:0.5s;">🎊👑</div>
+      <!-- Hearts -->
+      <div class="heart" style="top:30px;left:35%;font-size:2.5rem;animation-delay:0s;">💒</div>
+      <div class="heart" style="top:50px;left:55%;animation-delay:0.4s;font-size:1.8rem;">💕</div>
+    </div>
+    <div class="story-box" data-chapter="🎊 Et ils vécurent heureux !">
+      Ils se marièrent un <strong>samedi de printemps</strong>, entourés de fleurs cultivées de ses mains. Elle arriva en robe blanche… avec ses chaussures de médecin confortables 👟 et son stéthoscope. Il l'attendait, les yeux brillants. Dans leur maison pleine de verdure, l'amour avait la patience tranquille d'un escargot qui sait exactement où il va. 🐌💕
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(5)">◀ Précédent</button>
+      <span class="page-indicator">📖 6 / 6</span>
+      <button class="nav-btn" onclick="backToCover()" style="background:#FFD93D;color:#C0392B;box-shadow:0 4px 0 #E67E22;">🏠 Accueil</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 1;
+  const total = 6;
+
+  function startStory() {
+    document.getElementById('cover').style.display = 'none';
+    document.getElementById('book').style.display = 'block';
+    goTo(1);
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById('page-' + n);
+    if (page) {
+      page.classList.add('active');
+      current = n;
+    }
+    if (n === 6) spawnConfetti();
+    window.scrollTo(0, 0);
+  }
+
+  function backToCover() {
+    document.getElementById('book').style.display = 'none';
+    document.getElementById('cover').style.display = 'flex';
+  }
+
+  function spawnConfetti() {
+    const container = document.getElementById('confetti');
+    container.innerHTML = '';
+    const colors = ['#FF6B9D','#FFD93D','#6DBE47','#9B59B6','#3498DB','#E74C3C','#FF9F4B'];
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `
+        left: ${Math.random()*100}%;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration: ${2 + Math.random()*3}s;
+        animation-delay: ${Math.random()*3}s;
+        transform: rotate(${Math.random()*360}deg);
+        width: ${8+Math.random()*10}px;
+        height: ${8+Math.random()*10}px;
+        border-radius: ${Math.random()>0.5?'50%':'2px'};
+      `;
+      container.appendChild(c);
+    }
+  }
+</script>
+</body>
+</html>
